@@ -1,0 +1,58 @@
+import 'package:reddit/src/comment.dart';
+
+List<dynamic> parseSubmissionListing(Map<String, dynamic> submissionListing) {
+  List<dynamic> children = submissionListing["children"];
+
+  List<dynamic> parsedSubmissions = [];
+
+  for (Map<String, dynamic> child in children) {
+    if (child["kind"] == "t3") {
+      parsedSubmissions.add(parseSubmission(child));
+    }
+  }
+
+  return parsedSubmissions;
+}
+
+Map<String, dynamic> parseCommentListing({required Map<String, dynamic> commentListing, String? parentId}) {
+  List<dynamic> children = commentListing["children"];
+
+  List<Comment> comments = [];
+  Map<String, dynamic>? moreComments;
+
+  children.asMap().forEach((index, comment) {
+    if (comment["kind"] == "t1") {
+      comments.add(Comment(information: comment["data"]));
+    } else if (comment["kind"] == "more") {
+      moreComments = comment;
+    }
+  });
+
+  Map<String, dynamic> response = {
+    'comments': comments,
+    'more': moreComments,
+  };
+
+  return response;
+}
+
+Map<String, dynamic> parseListing(Map<String, dynamic> data) {
+  if (!data.containsKey("data")) throw Exception("Response does not contain any data");
+  if (!data.containsKey("kind") && data["kind"] != "Listing") throw Exception("Response does not contain the correct type of data");
+
+  return data["data"];
+}
+
+Map<String, dynamic> parseSubreddit(Map<String, dynamic> subredditResponse) {
+  if (!subredditResponse.containsKey("data")) throw Exception("Response does not contain any data");
+  if (!subredditResponse.containsKey("kind") && subredditResponse["kind"] != "t5") throw Exception("Response does not contain the correct type of data");
+
+  return subredditResponse["data"];
+}
+
+Map<String, dynamic> parseSubmission(Map<String, dynamic> submissionResponse) {
+  if (!submissionResponse.containsKey("data")) throw Exception("Response does not contain any data");
+  if (!submissionResponse.containsKey("kind") && submissionResponse["kind"] != "t3") throw Exception("Response does not contain the correct type of data");
+
+  return submissionResponse["data"];
+}
