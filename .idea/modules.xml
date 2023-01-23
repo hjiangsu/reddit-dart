@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/reddit_dart.iml" filepath="$PROJECT_DIR$/reddit_dart.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reddit.iml" filepath="$PROJECT_DIR$/reddit.iml" />
     </modules>
   </component>
 </project>

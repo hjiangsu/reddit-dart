@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:reddit_dart/reddit_dart.dart';
+import 'package:reddit/reddit.dart';
 
 void main() {
   test('adds one to input values', () {

@@ -1,4 +1,4 @@
-library reddit_dart;
+library reddit;
 
 /// A Calculator.
 class Calculator {
