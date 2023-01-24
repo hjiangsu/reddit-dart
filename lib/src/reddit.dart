@@ -8,6 +8,7 @@ part 'authorization.dart';
 part 'subreddit.dart';
 part 'submission.dart';
 part 'comment_tree.dart';
+part 'front.dart';
 
 Dio dio = Dio();
 
@@ -113,5 +114,42 @@ class Reddit {
   dynamic submission(String id) async {
     Submission submission = await Submission.create(reddit: this, id: id, fetchComments: true);
     return submission;
+  }
+
+  /// Performs functions related to a comments.
+  ///
+  /// By default, it returns back an instance of [CommentTree].
+  /// With an instance of CommentTree, you can obtain the replies of the particular Comment.
+  /// The result returns a [List<Comment>], with the first element of the list being the parent comment.
+  ///
+  /// ```dart
+  /// reddit.commentTree(submissionId: "5or86n", commentId: "dcleoq1");
+  /// reddit.commentTree(submissionId: "5or86n", commentId: "dcleoq1").comments;
+  /// ```
+  dynamic commentTree({required String submissionId, required String commentId}) async {
+    // Retrieve a commment tree
+    CommentTree commentTree = await CommentTree.create(reddit: this, submissionId: submissionId, commentId: commentId);
+    return commentTree;
+  }
+
+  /// Performs functions related to a subreddit at the home page.
+  ///
+  /// By default, it returns back an instance of [Front].
+  /// A [List<Submission>] will be returned back for any functions which retrieve back Submissions.
+  ///
+  /// ```dart
+  /// reddit.front("popular").hot();
+  /// reddit.front("popular").newest();
+  /// reddit.front("popular").rising();
+  /// ```
+  ///
+  /// To get more submissions, you must first call one of the previous methods to retrieve submissions.
+  ///
+  /// ```dart
+  /// reddit.front("popular").hot().more();
+  /// ```
+  Future<Front> front(String type) async {
+    Front frontInstance = await Front.create(reddit: this, type: type);
+    return frontInstance;
   }
 }

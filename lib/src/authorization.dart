@@ -53,6 +53,26 @@ class Authorization {
     }
   }
 
+  refresh({required String refreshToken, required String callbackURL}) async {
+    final Response response = await dio.post(
+      callbackURL,
+      data: {
+        "refresh_token": refreshToken,
+      },
+    );
+
+    print(response.data);
+    authorizationInformation = response.data;
+  }
+
+  reauthorize() async {
+    await _initialize(clientId: _reddit.clientId, clientSecret: _reddit.clientSecret);
+  }
+
+  setAuthorization(Map<String, dynamic> auth) {
+    authorizationInformation = auth;
+  }
+
   String? get accessToken => authorizationInformation["access_token"];
   bool get isInitialized => authorizationInformation.isNotEmpty;
 }
