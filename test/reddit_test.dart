@@ -163,6 +163,30 @@ void main() {
     for (Submission submission in submissions) {
       print(submission.information["title"]);
     }
+
+    submissions = await front.newest();
+
+    print("");
+
+    for (Submission submission in submissions) {
+      print(submission.information["title"]);
+    }
+
+    submissions = await front.rising();
+
+    print("");
+
+    for (Submission submission in submissions) {
+      print(submission.information["title"]);
+    }
+
+    submissions = await front.top("day");
+
+    print("");
+
+    for (Submission submission in submissions) {
+      print(submission.information["title"]);
+    }
   });
 
   test('can retrieve front page information from a type - all', () async {

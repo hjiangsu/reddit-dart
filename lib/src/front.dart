@@ -33,7 +33,14 @@ class Front {
 
   /// Initialization function for Front class. Takes in "popular", "best", and "all"
   _initialize({String? type}) async {
-    Map<String, dynamic> submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$type");
+    Map<String, dynamic> submissionResponse = {};
+
+    if (type == "best") {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/$type");
+    } else {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$type");
+    }
+
     Map<String, dynamic> submissionListing = parseListing(submissionResponse);
     List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
 
@@ -50,7 +57,14 @@ class Front {
 
   /// Obtain the listings categorized by "hot"
   hot() async {
-    Map<String, dynamic> submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/hot");
+    Map<String, dynamic> submissionResponse = {};
+
+    if (frontType == "best") {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/hot");
+    } else {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/hot");
+    }
+
     Map<String, dynamic> submissionListing = parseListing(submissionResponse);
     List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
 
@@ -69,7 +83,14 @@ class Front {
 
   /// Obtain the listings categorized by "new"
   newest() async {
-    Map<String, dynamic> submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/new");
+    Map<String, dynamic> submissionResponse = {};
+
+    if (frontType == "best") {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/new");
+    } else {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/new");
+    }
+
     Map<String, dynamic> submissionListing = parseListing(submissionResponse);
     List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
 
@@ -90,11 +111,21 @@ class Front {
   ///
   /// `timeframe` must be one of "hour", "day", "week", "month", "year", "all"
   top(String timeframe) async {
-    Map<String, dynamic> submissionResponse = await _reddit.request(
-      method: "GET",
-      endpoint: "/r/$frontType/top",
-      params: {"t": timeframe},
-    );
+    Map<String, dynamic> submissionResponse = {};
+
+    if (frontType == "best") {
+      submissionResponse = await _reddit.request(
+        method: "GET",
+        endpoint: "/top",
+        params: {"t": timeframe},
+      );
+    } else {
+      submissionResponse = await _reddit.request(
+        method: "GET",
+        endpoint: "/r/$frontType/top",
+        params: {"t": timeframe},
+      );
+    }
 
     Map<String, dynamic> submissionListing = parseListing(submissionResponse);
     List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
@@ -114,7 +145,14 @@ class Front {
 
   /// Obtain the listings categorized by "rising"
   rising() async {
-    Map<String, dynamic> submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/rising");
+    Map<String, dynamic> submissionResponse = {};
+
+    if (frontType == "best") {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/rising");
+    } else {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/rising");
+    }
+
     Map<String, dynamic> submissionListing = parseListing(submissionResponse);
     List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
 
@@ -139,11 +177,21 @@ class Front {
       params.putIfAbsent('t', () => submissionListingInformation["timeframe"]);
     }
 
-    Map<String, dynamic> submissionResponse = await _reddit.request(
-      method: "GET",
-      endpoint: "/r/$frontType/${submissionListingInformation["type"]}",
-      params: params,
-    );
+    Map<String, dynamic> submissionResponse = {};
+
+    if (frontType == "best") {
+      submissionResponse = await _reddit.request(
+        method: "GET",
+        endpoint: "/$frontType/${submissionListingInformation["type"]}",
+        params: params,
+      );
+    } else {
+      submissionResponse = await _reddit.request(
+        method: "GET",
+        endpoint: "/r/$frontType/${submissionListingInformation["type"]}",
+        params: params,
+      );
+    }
 
     Map<String, dynamic> submissionListing = parseListing(submissionResponse);
     List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
