@@ -1,25 +1,33 @@
-A Reddit library developed in Dart.
+# DRAPI - Dart Reddit API Library
+An unofficial Reddit library developed in Dart. This project is currently under heavy development and is ***NOT*** yet suitable for production. Use at your own risk.
 
-## Features
+## Getting Started
+A reddit application must be registered in order to use this library. Check their site for more information regarding how to set up an application with Reddit.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+To generate a Reddit instance, the following parameters are required: `clientId`, `clientSecret`, and `userAgent`.
 ```dart
-const like = 'sample';
+final Reddit reddit = Reddit(clientId: "client", clientSecret: "secret", userAgent: "agent");
 ```
 
-## Additional information
+With the reddit instance, you can perform basic actions on subreddits, submissions, and comments.
+```dart
+// Access a subreddit's information
+reddit.subreddit("apple").information["display_name"];
+reddit.subreddit("apple").information["subscribers"];
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+// Access the listings/submissions for a given subreddit
+reddit.subreddit("apple").hot();
+reddit.subreddit("apple").newest();
+reddit.subreddit("apple").rising();
+reddit.subreddit("apple").top("month");
+
+// Access information for a given submission
+reddit.submission("5or86n").information["title"];
+reddit.submission("5or86n").information["permalink"];
+
+// Access a given home page's submissions
+reddit.front("popular").hot();
+reddit.front("popular").newest();
+reddit.front("popular").rising();
+```
+
