@@ -3,8 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:reddit/reddit.dart';
 import 'package:reddit/src/comment.dart';
 
+// Fill these out before running any tests!
 const clientId = "";
 const userAgent = "";
+const callbackURL = "";
+const refreshToken = "";
+const accessToken = "";
 
 void main() {
   test('authorization works with clientId, clientSecret, and userAgent', () async {
@@ -225,5 +229,62 @@ void main() {
     for (Submission submission in submissions) {
       print(submission.information["title"]);
     }
+  });
+
+  group('authorization', () {
+    test('throws error when passing in bad parameters', () async {
+      final Reddit reddit = Reddit(clientId: "", clientSecret: "", userAgent: "");
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized}');
+    });
+
+    test('can authorize with given clientId, clientSecret, and userAgent', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+    });
+
+    test('can re-authorize with given clientId, clientSecret, and userAgent', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Authorization? authorization = await reddit.authorize();
+      print('initial: is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      await authorization?.reauthorize();
+      print('re-authorization: is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+    });
+
+    test('can force manual authorization map', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      Map<String, dynamic> authorizationMap = {
+        "access_token": accessToken,
+        "token_type": "bearer",
+        "device_id": "88fd40ce-b4c7-47f3-9662-1703721dd760",
+        "expires_in": 86400,
+        "scope": "*",
+      };
+
+      await authorization?.setAuthorization(authorizationMap);
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+    });
+
+    test('can force user re-authorization', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": accessToken,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": refreshToken,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+    });
   });
 }

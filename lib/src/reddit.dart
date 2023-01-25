@@ -20,13 +20,15 @@ class Reddit {
   final String clientSecret;
   final String userAgent;
 
+  String? callbackURL;
+
   Authorization? authorization;
 
   Reddit({required this.clientId, required this.clientSecret, required this.userAgent, Map<String, dynamic>? options}) {
     if (options != null) {
       // Parse any extra options here
       if (options.containsKey('dio')) dio = options['dio'];
-      if (options.containsKey('authorizationInformation')) {}
+      if (options.containsKey('callbackURL')) callbackURL = options['callbackURL'];
     }
   }
 
@@ -70,8 +72,9 @@ class Reddit {
     }
   }
 
-  Future<void> authorize() async {
-    authorization = await Authorization.create(reddit: this);
+  Future<Authorization?> authorize() async {
+    authorization = await Authorization.create(reddit: this, callbackURL: callbackURL);
+    return authorization;
   }
 
   /// Performs functions related to a subreddit.
