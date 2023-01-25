@@ -4,7 +4,7 @@ class Comment {
   late Map<String, dynamic> _information;
 
   List<dynamic>? children;
-  List<dynamic> replies = [];
+  List<Comment> replies = [];
 
   Comment({required Map<String, dynamic> information}) {
     _information = information;
