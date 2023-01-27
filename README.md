@@ -14,7 +14,12 @@ final Reddit reddit = Reddit(clientId: "client", clientSecret: "secret", userAge
 If the application is accessing user information (such as authenticating with a given user), then a callback URL must also be specified in order to refresh any user tokens.
 
 ```dart
-final Reddit reddit = Reddit(clientId: "client", clientSecret: "secret", userAgent: "agent", options: {"callbackURL": callbacklURL });
+final Reddit reddit = Reddit(
+    clientId: "client",
+    clientSecret: "secret",
+    userAgent: "agent",
+    options: {"callbackURL": callbackURL },
+);
 ```
 
 Once the Reddit instance is initialized, you may need to authorize with Reddit's endpoint in order to perform most of the functions listed in the following sections.
@@ -26,11 +31,13 @@ To authorize with Reddit's endpoints, you can perform the following actions.
 // Performs a manual anonymous authorization with Reddit - this generates the access_token needed for calls to the OAuth endpoints.
 reddit.authorize();
 
-// If you already have the auth information, you can manually set the auth information. Note that reddit.authorize() must be called at least once in order to set the auth information.
+// If you already have the auth information, you can manually set the auth information.
+// Note that reddit.authorize() must be called at least once in order to set the auth information.
 reddit.authorize();
 reddit.authorization?.setAuthorization(authorizationInformation);
 
-// Performs user-based authorization given that you already have the refresh_token of the user. Note that reddit.authorize() must be called at least once in order to set the auth information.
+// Performs user-based authorization given that you already have the refresh_token of the user. 
+// Note that reddit.authorize() must be called at least once in order to set the auth information.
 reddit.authorize();
 reddit.authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
 ```
@@ -104,7 +111,7 @@ reddit.me().subscriptions();
 ## Implemented API endpoints
 The following section describes all the endpoints that are currently implemented. Note that for the implemented endpoints, not all available parameters may be present.
 
-The implemented endpoints are categorized by oauth scope: [https://www.reddit.com/dev/api/oauth](reference)
+The implemented endpoints are categorized by oauth scope as described in the Reddit API documentation: [reference](https://www.reddit.com/dev/api/oauth)
 
 ### auth
 - `/api/v1/access_token`
