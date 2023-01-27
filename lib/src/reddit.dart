@@ -9,6 +9,7 @@ part 'subreddit.dart';
 part 'submission.dart';
 part 'comment_tree.dart';
 part 'front.dart';
+part 'redditor.dart';
 
 Dio dio = Dio();
 
@@ -154,5 +155,19 @@ class Reddit {
   Future<Front> front(String type) async {
     Front frontInstance = await Front.create(reddit: this, type: type);
     return frontInstance;
+  }
+
+  /// Performs functions related a given user - either the currently logged in user or as a different user
+  ///
+  /// By default, it returns back an instance of [Redditor].
+  /// You can retrieve the user's subscriptions which returns back a List<Subreddit>
+  ///
+  /// ```dart
+  /// reddit.me();
+  /// reddit.me().subscriptions();
+  /// ```
+  Future<Redditor> me() async {
+    Redditor redditor = await Redditor.create(reddit: this);
+    return redditor;
   }
 }

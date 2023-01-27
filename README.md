@@ -31,3 +31,31 @@ reddit.front("popular").newest();
 reddit.front("popular").rising();
 ```
 
+## Implemented API endpoints
+The following section describes all the endpoints that are currently implemented. Note that for the implemented endpoints, not all available parameters may be present.
+
+The implemented endpoints are categorized by oauth scope: [https://www.reddit.com/dev/api/oauth](reference)
+
+### auth
+- `/api/v1/access_token`
+
+### identity
+- `/api/v1/me`
+
+### mysubreddits
+- `/subreddits/mine/subscriber`
+
+### read
+- `/api/morechildren`
+- `/best`
+- `/by_id/names` - this is only for retrieving specific submissions
+- `/r/subreddit/about`
+- `[/r/subreddit]/hot`
+- `[/r/subreddit]/new`
+- `[/r/subreddit]/rising`
+- `[/r/subreddit]/top`
+- `[/r/subreddit]/comments/article`
+- `/user/username/about`
+
+
+

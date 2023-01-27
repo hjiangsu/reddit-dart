@@ -97,4 +97,5 @@ class Authorization {
 
   String? get accessToken => authorizationInformation["access_token"];
   bool get isInitialized => authorizationInformation.isNotEmpty;
+  bool get isUserAuthenticated => authorizationInformation.containsKey("refresh_token");
 }

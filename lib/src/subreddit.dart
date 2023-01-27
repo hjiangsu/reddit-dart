@@ -43,19 +43,21 @@ class Subreddit {
   }
 
   /// Factory function to generate the Subreddit instance
-  static Future<Subreddit> create({required Reddit reddit, String? subreddit}) async {
+  static Future<Subreddit> create({required Reddit reddit, String? subreddit, Map<String, dynamic>? information}) async {
     Subreddit subredditInstance = Subreddit._create(reddit: reddit);
 
     // Do initialization that requires async
-    await subredditInstance._initialize(subreddit: subreddit);
+    await subredditInstance._initialize(subreddit: subreddit, information: information);
 
     // Return the fully initialized object
     return subredditInstance;
   }
 
   /// Initialization function for Subreddit class
-  _initialize({String? subreddit}) async {
-    if (subreddit != null) {
+  _initialize({String? subreddit, Map<String, dynamic>? information}) async {
+    if (information != null) {
+      _information = information;
+    } else if (subreddit != null) {
       Map<String, dynamic> subredditResponse = await _reddit.request(method: "GET", endpoint: "/r/$subreddit/about");
       Map<String, dynamic> subredditData = parseSubreddit(subredditResponse);
       _information = subredditData;
