@@ -182,7 +182,7 @@ class Front {
     if (frontType == "best") {
       submissionResponse = await _reddit.request(
         method: "GET",
-        endpoint: "/$frontType/${submissionListingInformation["type"]}",
+        endpoint: "/${submissionListingInformation["type"]}",
         params: params,
       );
     } else {
