@@ -184,10 +184,49 @@ void main() {
   });
 
   group('front', () {
+    test('can retrieve default front page information for logged in user', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": accessToken,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": refreshToken,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+
+      Front front = await reddit.front("home");
+      List<Submission> submissions = await front.best();
+
+      for (Submission submission in submissions) {
+        print(submission.information["title"]);
+      }
+
+      submissions = await front.more();
+
+      print("");
+
+      for (Submission submission in submissions) {
+        print(submission.information["title"]);
+      }
+    });
+
     test('can retrieve front page information from a type - home', () async {
       final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
       Front front = await reddit.front("home");
-      List<Submission> submissions = await front.hot();
+      List<Submission> submissions = await front.best();
+
+      for (Submission submission in submissions) {
+        print(submission.information["title"]);
+      }
+
+      submissions = await front.hot();
+
+      print("");
 
       for (Submission submission in submissions) {
         print(submission.information["title"]);

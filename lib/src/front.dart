@@ -9,9 +9,6 @@ class Front {
   late Reddit _reddit;
   late String frontType;
 
-  // Initial submissions from calling the initialization
-  List<Submission> initialSubmissions = [];
-
   // Front submissions and data
   Map<String, dynamic> submissionListingInformation = {
     "after": null,
@@ -24,8 +21,8 @@ class Front {
   }
 
   /// Factory function to generate the Front instance
-  static Future<Front> create({required Reddit reddit, String? type}) async {
-    Front frontInstance = Front._create(reddit: reddit, type: type ?? "popular");
+  static Future<Front> create({required Reddit reddit, required String type}) async {
+    Front frontInstance = Front._create(reddit: reddit, type: type);
 
     // Do initialization that requires async
     await frontInstance._initialize(type: type);
@@ -35,25 +32,7 @@ class Front {
   }
 
   /// Initialization function for Front class. Takes in "popular", "home", and "all"
-  _initialize({String? type}) async {
-    Map<String, dynamic> submissionResponse = {};
-
-    if (type == "home") {
-      submissionResponse = await _reddit.request(method: "GET", endpoint: "/best");
-    } else {
-      submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$type");
-    }
-
-    Map<String, dynamic> submissionListing = parseListing(submissionResponse);
-    List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
-
-    List<Submission> submissions = [];
-    for (Map<String, dynamic> submission in submissionsList) {
-      submissions.add(await Submission.create(reddit: _reddit, information: submission));
-    }
-
-    initialSubmissions = submissions;
-
+  _initialize({required String type}) async {
     // Set internal variables to hold for querying more submissions
     if (type == "home") {
       submissionListingInformation["type"] = "";
@@ -61,7 +40,37 @@ class Front {
       submissionListingInformation["type"] = "hot";
     }
     submissionListingInformation["timeframe"] = null;
+    submissionListingInformation["after"] = null;
+  }
+
+  best() async {
+    Map<String, dynamic> submissionResponse = {};
+
+    if (frontType == "home") {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/.json");
+    } else {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/hot");
+    }
+
+    Map<String, dynamic> submissionListing = parseListing(submissionResponse);
+    List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
+
+    List<Submission> submissions = [];
+    for (Map<String, dynamic> submissionInformation in submissionsList) {
+      submissions.add(await Submission.create(reddit: _reddit, information: submissionInformation));
+    }
+
+    // Set internal variables to hold for querying more submissions
+    if (frontType == "home") {
+      submissionListingInformation["type"] = "";
+    } else {
+      submissionListingInformation["type"] = "hot";
+    }
+
+    submissionListingInformation["timeframe"] = null;
     submissionListingInformation["after"] = submissionListing["after"];
+
+    return submissions;
   }
 
   /// Obtain the listings categorized by "hot"
@@ -191,7 +200,7 @@ class Front {
     if (frontType == "home") {
       submissionResponse = await _reddit.request(
         method: "GET",
-        endpoint: submissionListingInformation["type"] != "" ? "/${submissionListingInformation["type"]}" : "/best",
+        endpoint: submissionListingInformation["type"] != "" ? "/${submissionListingInformation["type"]}" : "/.json",
         params: params,
       );
     } else {
