@@ -184,9 +184,9 @@ void main() {
   });
 
   group('front', () {
-    test('can retrieve front page information from a type - best', () async {
+    test('can retrieve front page information from a type - home', () async {
       final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
-      Front front = await reddit.front("best");
+      Front front = await reddit.front("home");
       List<Submission> submissions = await front.hot();
 
       for (Submission submission in submissions) {

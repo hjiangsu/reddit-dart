@@ -9,6 +9,9 @@ class Front {
   late Reddit _reddit;
   late String frontType;
 
+  // Initial submissions from calling the initialization
+  List<Submission> initialSubmissions = [];
+
   // Front submissions and data
   Map<String, dynamic> submissionListingInformation = {
     "after": null,
@@ -31,12 +34,12 @@ class Front {
     return frontInstance;
   }
 
-  /// Initialization function for Front class. Takes in "popular", "best", and "all"
+  /// Initialization function for Front class. Takes in "popular", "home", and "all"
   _initialize({String? type}) async {
     Map<String, dynamic> submissionResponse = {};
 
-    if (type == "best") {
-      submissionResponse = await _reddit.request(method: "GET", endpoint: "/$type");
+    if (type == "home") {
+      submissionResponse = await _reddit.request(method: "GET", endpoint: "/best");
     } else {
       submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$type");
     }
@@ -49,8 +52,14 @@ class Front {
       submissions.add(await Submission.create(reddit: _reddit, information: submission));
     }
 
+    initialSubmissions = submissions;
+
     // Set internal variables to hold for querying more submissions
-    submissionListingInformation["type"] = "hot";
+    if (type == "home") {
+      submissionListingInformation["type"] = "";
+    } else {
+      submissionListingInformation["type"] = "hot";
+    }
     submissionListingInformation["timeframe"] = null;
     submissionListingInformation["after"] = submissionListing["after"];
   }
@@ -59,7 +68,7 @@ class Front {
   hot() async {
     Map<String, dynamic> submissionResponse = {};
 
-    if (frontType == "best") {
+    if (frontType == "home") {
       submissionResponse = await _reddit.request(method: "GET", endpoint: "/hot");
     } else {
       submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/hot");
@@ -85,7 +94,7 @@ class Front {
   newest() async {
     Map<String, dynamic> submissionResponse = {};
 
-    if (frontType == "best") {
+    if (frontType == "home") {
       submissionResponse = await _reddit.request(method: "GET", endpoint: "/new");
     } else {
       submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/new");
@@ -113,7 +122,7 @@ class Front {
   top(String timeframe) async {
     Map<String, dynamic> submissionResponse = {};
 
-    if (frontType == "best") {
+    if (frontType == "home") {
       submissionResponse = await _reddit.request(
         method: "GET",
         endpoint: "/top",
@@ -147,7 +156,7 @@ class Front {
   rising() async {
     Map<String, dynamic> submissionResponse = {};
 
-    if (frontType == "best") {
+    if (frontType == "home") {
       submissionResponse = await _reddit.request(method: "GET", endpoint: "/rising");
     } else {
       submissionResponse = await _reddit.request(method: "GET", endpoint: "/r/$frontType/rising");
@@ -179,10 +188,10 @@ class Front {
 
     Map<String, dynamic> submissionResponse = {};
 
-    if (frontType == "best") {
+    if (frontType == "home") {
       submissionResponse = await _reddit.request(
         method: "GET",
-        endpoint: "/${submissionListingInformation["type"]}",
+        endpoint: submissionListingInformation["type"] != "" ? "/${submissionListingInformation["type"]}" : "/best",
         params: params,
       );
     } else {
