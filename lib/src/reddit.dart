@@ -10,6 +10,7 @@ part 'submission.dart';
 part 'comment_tree.dart';
 part 'front.dart';
 part 'redditor.dart';
+part 'search.dart';
 
 Dio dio = Dio();
 
@@ -169,5 +170,41 @@ class Reddit {
   Future<Redditor> me() async {
     Redditor redditor = await Redditor.create(reddit: this);
     return redditor;
+  }
+
+  /// Performs functions related a given user - either the currently logged in user or as a different user
+  ///
+  /// By default, it returns back an instance of [Redditor].
+  ///
+  /// ```dart
+  /// reddit.redditor(username: "username");
+  /// ```
+  Future<Redditor> redditor({required String username}) async {
+    Redditor redditor = await Redditor.create(reddit: this, username: username);
+    return redditor;
+  }
+
+  /// Performs functions related to search. Currently enables searching for subreddits and users
+  ///
+  /// By default, it returns back an instance of [Search].
+  ///
+  /// ```dart
+  /// reddit.search();
+  /// ```
+  ///
+  /// Searching for a subreddit will return back a List<Subreddit>. You can alter the limit and nsfw flag in the function call.
+  /// To continue the search results, call the more() function.
+  /// ```dart
+  /// searchInstance.search(subredditQuery: "apple", limit: 10, nsfw: false);
+  /// searchInstance.more();
+  /// ```
+  ///
+  /// Searching for a user will return back a List<Redditor>. You can alter the limit and nsfw flag in the function call.
+  /// ```dart
+  /// searchInstance.search(userQuery: "ther", limit: 10, nsfw: false);
+  /// ```
+  Future<Search> search() async {
+    Search search = await Search.create(reddit: this);
+    return search;
   }
 }

@@ -44,6 +44,71 @@ void main() {
     });
   });
 
+  group('redditor', () {
+    test('obtains information of a redditor from a given username', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+
+      await reddit.authorize();
+
+      Redditor redditor = await reddit.redditor(username: "thermoelectricoreos");
+      print(redditor.information!["id"]);
+    });
+
+    test('can search for user based on a query with nsfw off', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Search search = await reddit.search();
+      List<dynamic> searchResults = await search.search(userQuery: "ther");
+
+      for (Redditor redditor in searchResults) {
+        print(redditor.information!["name"]);
+      }
+
+      searchResults = await search.more();
+
+      print("");
+
+      for (Redditor redditor in searchResults) {
+        print(redditor.information!["name"]);
+      }
+    });
+
+    test('can search for user based on a query with nsfw on', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Search search = await reddit.search();
+      List<dynamic> searchResults = await search.search(userQuery: "ther", nsfw: true);
+
+      for (Redditor redditor in searchResults) {
+        print(redditor.information!["name"]);
+      }
+
+      searchResults = await search.more();
+
+      print("");
+
+      for (Redditor redditor in searchResults) {
+        print(redditor.information!["name"]);
+      }
+    });
+
+    test('can search for user based on a query with increased limits', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Search search = await reddit.search();
+      List<dynamic> searchResults = await search.search(userQuery: "ther", limit: 100);
+
+      for (Redditor redditor in searchResults) {
+        print(redditor.information!["name"]);
+      }
+
+      searchResults = await search.more();
+
+      print("");
+
+      for (Redditor redditor in searchResults) {
+        print(redditor.information!["name"]);
+      }
+    });
+  });
+
   group('submission', () {
     test('can retrieve submission information from a subreddit - hot', () async {
       final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
@@ -301,6 +366,60 @@ void main() {
       final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
       Subreddit subreddit = await reddit.subreddit("apple");
       print(subreddit.information!["display_name"]);
+    });
+
+    test('can search for subreddit based on a query with nsfw off', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Search search = await reddit.search();
+      List<Subreddit> searchResults = await search.search(subredditQuery: "ask");
+
+      for (Subreddit subreddit in searchResults) {
+        print(subreddit.information!["title"]);
+      }
+
+      searchResults = await search.more();
+
+      print("");
+
+      for (Subreddit subreddit in searchResults) {
+        print(subreddit.information!["title"]);
+      }
+    });
+
+    test('can search for subreddit based on a query with nsfw on', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Search search = await reddit.search();
+      List<Subreddit> searchResults = await search.search(subredditQuery: "ask", nsfw: true);
+
+      for (Subreddit subreddit in searchResults) {
+        print(subreddit.information!["title"]);
+      }
+
+      searchResults = await search.more();
+
+      print("");
+
+      for (Subreddit subreddit in searchResults) {
+        print(subreddit.information!["title"]);
+      }
+    });
+
+    test('can search for subreddit based on a query with increased limits', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Search search = await reddit.search();
+      List<Subreddit> searchResults = await search.search(subredditQuery: "ask", limit: 100);
+
+      for (Subreddit subreddit in searchResults) {
+        print(subreddit.information!["title"]);
+      }
+
+      searchResults = await search.more();
+
+      print("");
+
+      for (Subreddit subreddit in searchResults) {
+        print(subreddit.information!["title"]);
+      }
     });
   });
 

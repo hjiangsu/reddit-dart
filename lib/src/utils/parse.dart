@@ -1,5 +1,33 @@
 import 'package:reddit/src/comment.dart';
 
+List<dynamic> parseSubredditListing(Map<String, dynamic> subredditListing) {
+  List<dynamic> children = subredditListing["children"];
+
+  List<dynamic> parsedSubreddit = [];
+
+  for (Map<String, dynamic> child in children) {
+    if (child["kind"] == "t5") {
+      parsedSubreddit.add(parseSubreddit(child));
+    }
+  }
+
+  return parsedSubreddit;
+}
+
+List<dynamic> parseRedditorListing(Map<String, dynamic> redditorListing) {
+  List<dynamic> children = redditorListing["children"];
+
+  List<dynamic> parsedRedditor = [];
+
+  for (Map<String, dynamic> child in children) {
+    if (child["kind"] == "t2") {
+      parsedRedditor.add(parseRedditor(child));
+    }
+  }
+
+  return parsedRedditor;
+}
+
 List<dynamic> parseSubmissionListing(Map<String, dynamic> submissionListing) {
   List<dynamic> children = submissionListing["children"];
 
@@ -55,4 +83,11 @@ Map<String, dynamic> parseSubmission(Map<String, dynamic> submissionResponse) {
   if (!submissionResponse.containsKey("kind") && submissionResponse["kind"] != "t3") throw Exception("Response does not contain the correct type of data");
 
   return submissionResponse["data"];
+}
+
+Map<String, dynamic> parseRedditor(Map<String, dynamic> redditorResponse) {
+  if (!redditorResponse.containsKey("data")) throw Exception("Response does not contain any data");
+  if (!redditorResponse.containsKey("kind") && redditorResponse["kind"] != "t2") throw Exception("Response does not contain the correct type of data");
+
+  return redditorResponse["data"];
 }

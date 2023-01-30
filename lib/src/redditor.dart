@@ -13,23 +13,25 @@ class Redditor {
   }
 
   /// Factory function to generate the Redditor instance
-  static Future<Redditor> create({required Reddit reddit, String? username}) async {
+  static Future<Redditor> create({required Reddit reddit, String? username, Map<String, dynamic>? information}) async {
     Redditor redditorInstance = Redditor._create(reddit: reddit);
 
     // Do initialization that requires async
-    await redditorInstance._initialize(username: username);
+    await redditorInstance._initialize(username: username, information: information);
 
     // Return the fully initialized object
     return redditorInstance;
   }
 
   /// Initialization function for Redditor class
-  _initialize({String? username}) async {
+  _initialize({String? username, Map<String, dynamic>? information}) async {
     Map<String, dynamic> response;
-    if (username != null) {
+    if (information != null) {
+      _information = information;
+    } else if (username != null) {
       response = await _reddit.request(method: "GET", endpoint: "/user/$username/about");
-      // Map<String, dynamic> redditorData = parseRedditor(response);
-      // _information = redditorData;
+      Map<String, dynamic> redditorData = parseRedditor(response);
+      _information = redditorData;
     } else {
       response = await _reddit.request(method: "GET", endpoint: "/api/v1/me");
       _information = response;
