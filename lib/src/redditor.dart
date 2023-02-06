@@ -8,6 +8,11 @@ class Redditor {
 
   dynamic _information;
 
+  Map<String, dynamic> submissionListingInformation = {
+    "after": null,
+    "type": null,
+  };
+
   Redditor._create({required Reddit reddit}) {
     _reddit = reddit;
   }
@@ -71,6 +76,50 @@ class Redditor {
     }
 
     return subreddits;
+  }
+
+  submissions() async {
+    if (_information == null) return;
+    String username = _information["name"];
+
+    Map<String, dynamic> submissionResponse = await _reddit.request(method: "GET", endpoint: "/user/$username/submitted");
+    Map<String, dynamic> submissionListing = parseListing(submissionResponse);
+    List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
+
+    List<Submission> submissions = [];
+    for (Map<String, dynamic> submission in submissionsList) {
+      submissions.add(await Submission.create(reddit: _reddit, information: submission));
+    }
+
+    // Set internal variables
+    submissionListingInformation["after"] = submissionListing["after"];
+
+    return submissions;
+  }
+
+  moreSubmissions() async {
+    if (_information == null) return;
+    String username = _information["name"];
+
+    Map<String, dynamic> params = {"after": submissionListingInformation["after"]};
+
+    Map<String, dynamic> submissionResponse = await _reddit.request(
+      method: "GET",
+      endpoint: "/user/$username/submitted",
+      params: params,
+    );
+    Map<String, dynamic> submissionListing = parseListing(submissionResponse);
+    List<dynamic> submissionsList = parseSubmissionListing(submissionListing);
+
+    List<Submission> submissions = [];
+    for (Map<String, dynamic> submission in submissionsList) {
+      submissions.add(await Submission.create(reddit: _reddit, information: submission));
+    }
+
+    // Set internal variables
+    submissionListingInformation["after"] = submissionListing["after"];
+
+    return submissions;
   }
 
   Map<String, dynamic>? get information => _information;
