@@ -116,8 +116,8 @@ class Reddit {
   /// reddit.submission("5or86n").information["title"];
   /// reddit.submission("5or86n").information["permalink"];
   /// ```
-  dynamic submission(String id) async {
-    Submission submission = await Submission.create(reddit: this, id: id, fetchComments: true);
+  dynamic submission(String id, {bool? fetchComments}) async {
+    Submission submission = await Submission.create(reddit: this, id: id, fetchComments: fetchComments);
     return submission;
   }
 
