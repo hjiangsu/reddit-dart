@@ -107,6 +107,36 @@ void main() {
         print(redditor.information!["name"]);
       }
     });
+
+    test('can search for user submissions', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Redditor redditor = await reddit.redditor(username: "_Mace_Windu_");
+
+      List<Submission> submissions = await redditor.submissions();
+
+      for (Submission submission in submissions) {
+        print(submission.information["title"]);
+      }
+    });
+
+    test('can search for user submissions with more', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      Redditor redditor = await reddit.redditor(username: "KeyTension8633");
+
+      List<Submission> submissions = await redditor.submissions();
+
+      for (Submission submission in submissions) {
+        print(submission.information["title"]);
+      }
+
+      submissions = await redditor.moreSubmissions();
+
+      print("");
+
+      for (Submission submission in submissions) {
+        print(submission.information["title"]);
+      }
+    });
   });
 
   group('submission', () {
@@ -218,8 +248,8 @@ void main() {
   group('comment', () {
     test('can retrieve submission comments from a submission', () async {
       final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
-      Submission submission = await reddit.submission("5or86n");
-      List<Comment> comments = submission.commentTree?.comments ?? [];
+      CommentTree commentTree = await reddit.commentTree(submissionId: "5or86n", subreddit: 'announcements');
+      List<Comment> comments = commentTree.comments ?? [];
 
       for (Comment comment in comments) {
         print(comment.information["body"]);
@@ -228,9 +258,9 @@ void main() {
 
     test('can retrieve more top-level comments from a submission', () async {
       final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
-      Submission submission = await reddit.submission("5or86n");
-      List<Comment> comments = submission.commentTree?.comments ?? [];
-      comments = await submission.commentTree?.more();
+      CommentTree commentTree = await reddit.commentTree(submissionId: "5or86n", subreddit: 'announcements');
+      List<Comment> comments = commentTree.comments ?? [];
+      comments = await commentTree.more();
 
       for (Comment comment in comments) {
         print(comment.information["body"]);

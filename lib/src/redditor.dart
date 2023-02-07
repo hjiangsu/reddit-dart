@@ -99,6 +99,7 @@ class Redditor {
 
   moreSubmissions() async {
     if (_information == null) return;
+    if (submissionListingInformation["after"] == null) return <Submission>[];
     String username = _information["name"];
 
     Map<String, dynamic> params = {"after": submissionListingInformation["after"]};

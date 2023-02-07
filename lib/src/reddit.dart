@@ -131,9 +131,9 @@ class Reddit {
   /// reddit.commentTree(submissionId: "5or86n", commentId: "dcleoq1");
   /// reddit.commentTree(submissionId: "5or86n", commentId: "dcleoq1").comments;
   /// ```
-  dynamic commentTree({required String submissionId, required String commentId}) async {
+  dynamic commentTree({required String submissionId, String? commentId, String? subreddit, String? sort}) async {
     // Retrieve a commment tree
-    CommentTree commentTree = await CommentTree.create(reddit: this, submissionId: submissionId, commentId: commentId);
+    CommentTree commentTree = await CommentTree.create(reddit: this, submissionId: submissionId, commentId: commentId, subreddit: subreddit, sort: sort);
     return commentTree;
   }
 
