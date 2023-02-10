@@ -58,11 +58,8 @@ class Submission {
     }
   }
 
-  save() async {
-    if (_information == null) return;
-
-    // Get the fullname
-    String submissionId = _information!["id"];
+  save({String? submissionId, String? category}) async {
+    String _submissionId = submissionId ?? _information!["id"];
 
     // Check to see if the submission is saved - ignore if already saved
     bool saved = _information?["saved"] ?? false;
@@ -71,18 +68,18 @@ class Submission {
     await _reddit.request(
       method: "POST",
       endpoint: "/api/save",
-      params: {"id": "t3_$submissionId"},
+      params: {
+        "id": "t3_$_submissionId",
+        "category": category,
+      },
     );
 
     // Refetch submission to get updated information
-    await _initialize(id: submissionId, fetchComments: false);
+    await _initialize(id: _submissionId, fetchComments: false);
   }
 
-  unsave() async {
-    if (_information == null) return;
-
-    // Get the fullname
-    String submissionId = _information!["id"];
+  unsave({String? submissionId}) async {
+    String _submissionId = submissionId ?? _information!["id"];
 
     // Check to see if the submission is saved - ignore if already saved
     bool unsaved = _information?["saved"] == false;
@@ -91,24 +88,23 @@ class Submission {
     await _reddit.request(
       method: "POST",
       endpoint: "/api/unsave",
-      params: {"id": "t3_$submissionId"},
+      params: {"id": "t3_$_submissionId"},
     );
 
     // Refetch submission to get updated information
-    await _initialize(id: submissionId, fetchComments: false);
+    await _initialize(id: _submissionId, fetchComments: false);
   }
 
   upvote() async {
-    if (_information == null) return;
+    if (_information == null) throw Exception('Submission is not initialized properly');
 
     // Check to see if user is authenticated
-    if (_reddit.authorization?.isUserAuthenticated == false) return;
+    if (_reddit.authorization?.isUserAuthenticated == false) throw Exception('User is not authorized to perform this action');
 
     // Check to see if the submission is archived - archived submissions cannot be voted on
     bool archived = _information?["archived"] ?? false;
-    if (archived) return;
+    if (archived) throw Exception('Submission is archived, cannot perform vote actions on archived submissions');
 
-    // Get the fullname
     String submissionId = _information!["id"];
 
     // Get the vote status to see if it was already upvoted
@@ -125,16 +121,15 @@ class Submission {
   }
 
   downvote() async {
-    if (_information == null) return;
+    if (_information == null) throw Exception('Submission is not initialized properly');
 
     // Check to see if user is authenticated
-    if (_reddit.authorization?.isUserAuthenticated == false) return;
+    if (_reddit.authorization?.isUserAuthenticated == false) throw Exception('User is not authorized to perform this action');
 
     // Check to see if the submission is archived - archived submissions cannot be voted on
     bool archived = _information?["archived"] ?? false;
-    if (archived) return;
+    if (archived) throw Exception('Submission is archived, cannot perform vote actions on archived submissions');
 
-    // Get the fullname
     String submissionId = _information!["id"];
 
     // Get the vote status to see if it was already upvoted

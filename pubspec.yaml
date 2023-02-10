@@ -1,7 +1,7 @@
 name: reddit
-description: A new Flutter package project.
-version: 0.0.1
-homepage:
+description: A reddit library built with Dart.
+version: 0.1.11-alpha
+homepage: https://github.com/hjiangsu/reddit-dart
 
 environment:
   sdk: '>=2.18.6 <3.0.0'

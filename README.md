@@ -97,6 +97,24 @@ reddit.submission("5or86n").information["title"];
 reddit.submission("5or86n").information["permalink"];
 ```
 
+If you are logged in as an authorized user, you may perform other user-related actions such as voting and saving submissions.
+
+A submission must not be archived in order to perform voting actions. If a submission is already voted on, and the same voting type is called, it will revert the status of the vote.
+
+If a submission is saved, or unsaved, and the same action is performed on it, it will not affect or modify the saved status of the submission.
+```dart
+reddit.submission("5or86n").upvote();
+// Calling upvote() again on a upvoted submission will cause it to be neutral
+reddit.submission("5or86n").upvote();
+
+reddit.submission("5or86n").downvote();
+// Calling downvote() again on a downvoted submission will cause it to be neutral
+reddit.submission("5or86n").downvote();
+
+reddit.submission("5or86n").save();
+reddit.submission("5or86n").unsave();
+```
+
 ### Redditor Information
 If the app has user-authentication, and a user has given access/permissions to the application, you may retrieve information as if you were that user.
 
@@ -134,5 +152,11 @@ The implemented endpoints are categorized by oauth scope as described in the Red
 - `[/r/subreddit]/comments/article`
 - `/user/username/about`
 
+### save
+- `/api/save`
+- `/api/unsave`
+
+### vote
+- `/api/vote`
 
 

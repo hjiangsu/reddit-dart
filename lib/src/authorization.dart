@@ -1,5 +1,6 @@
 part of './reddit.dart';
 
+/// Authorization information for a given Reddit instance.
 class Authorization {
   late Reddit _reddit;
   late String? _callbackURL;
@@ -24,7 +25,7 @@ class Authorization {
 
   /// Initialization function for Authorization class
   _initialize({required String clientId, required String clientSecret}) async {
-    const String url = "$redditURL/api/v1/access_token";
+    const String url = "$_redditURL/api/v1/access_token";
 
     // This device id should be per user per device
     // @todo - change the device id to be retrieved from the device itself
@@ -39,7 +40,7 @@ class Authorization {
       final Response response = await dio.post(
         url,
         data: {
-          "grant_type": "$oauthRedditURL/grants/installed_client",
+          "grant_type": "$_oauthRedditURL/grants/installed_client",
           "device_id": deviceId,
         },
         options: Options(

@@ -14,25 +14,27 @@ part 'search.dart';
 
 Dio dio = Dio();
 
-const String redditURL = 'https://reddit.com';
-const String oauthRedditURL = 'https://oauth.reddit.com';
+const String _redditURL = 'https://reddit.com';
+const String _oauthRedditURL = 'https://oauth.reddit.com';
 
+/// Class containing optional parameters for the Reddit instance.
+class RedditOptions {
+  final Dio? dio;
+  final String? callbackURL;
+
+  RedditOptions({this.dio, this.callbackURL});
+}
+
+/// Reddit class used to instantiate/call functions related to the library.
 class Reddit {
   final String clientId;
   final String clientSecret;
   final String userAgent;
 
-  String? callbackURL;
-
+  RedditOptions? options;
   Authorization? authorization;
 
-  Reddit({required this.clientId, required this.clientSecret, required this.userAgent, Map<String, dynamic>? options}) {
-    if (options != null) {
-      // Parse any extra options here
-      if (options.containsKey('dio')) dio = options['dio'];
-      if (options.containsKey('callbackURL')) callbackURL = options['callbackURL'];
-    }
-  }
+  Reddit({required this.clientId, required this.clientSecret, required this.userAgent, this.options});
 
   /// Perfoms a request to Reddit's OAuth endpoints.
   /// You should **not** need to call this function directly. If you need to request for a resource, use the appropriate function.
@@ -41,7 +43,7 @@ class Reddit {
   Future<dynamic> request({required String method, required String endpoint, Map<String, dynamic>? params}) async {
     if (authorization == null || !authorization!.isInitialized) await authorize();
 
-    String url = "$oauthRedditURL$endpoint";
+    String url = "$_oauthRedditURL$endpoint";
 
     Map<String, String> headers = {
       "User-Agent": userAgent,
@@ -75,7 +77,7 @@ class Reddit {
   }
 
   Future<Authorization?> authorize() async {
-    authorization = await Authorization.create(reddit: this, callbackURL: callbackURL);
+    authorization = await Authorization.create(reddit: this, callbackURL: options?.callbackURL);
     return authorization;
   }
 
@@ -172,9 +174,7 @@ class Reddit {
     return redditor;
   }
 
-  /// Performs functions related a given user - either the currently logged in user or as a different user
-  ///
-  /// By default, it returns back an instance of [Redditor].
+  /// Performs functions related a given user. By default, it returns back an instance of [Redditor].
   ///
   /// ```dart
   /// reddit.redditor(username: "username");

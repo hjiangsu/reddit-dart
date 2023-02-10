@@ -3,16 +3,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:reddit/reddit.dart';
 
 // Fill these out before running any tests!
-const clientId = "";
-const userAgent = "";
-const callbackURL = "";
-const refreshToken = "";
-const accessToken = "";
+// const clientId = "";
+// const userAgent = "";
+// const callbackURL = "";
+// const refreshToken = "";
+// const accessToken = "";
+
+const clientId = "***REMOVED***";
+const userAgent = "***REMOVED***";
+const callbackURL = "***REMOVED***";
+const refreshToken = "***REMOVED***";
+const accessToken = "***REMOVED***";
 
 void main() {
   group('me', () {
     test('throws error when retrieving subreddit subscriptions on a non-user authentication', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
 
       await reddit.authorize();
 
@@ -21,7 +27,7 @@ void main() {
     });
 
     test('can retrieve subreddit subscriptions from user', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
 
       // Re-authorize as a user
       await reddit.authorize();
@@ -46,7 +52,7 @@ void main() {
 
   group('redditor', () {
     test('obtains information of a redditor from a given username', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
 
       await reddit.authorize();
 
@@ -245,9 +251,8 @@ void main() {
     });
 
     test('can save a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
       Authorization? authorization = await reddit.authorize();
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
         "access_token": accessToken,
@@ -258,16 +263,16 @@ void main() {
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
-      dynamic result = await reddit.submission("10xznr6");
-      await result.save();
+      Submission submission = await reddit.submission("10xznr6");
+      print("Saved status: ${submission.information["saved"]}");
+      await submission.save();
+      print("Saved status: ${submission.information["saved"]}");
     });
 
     test('can unsave a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
       Authorization? authorization = await reddit.authorize();
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
         "access_token": accessToken,
@@ -278,16 +283,16 @@ void main() {
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
-      dynamic result = await reddit.submission("10xznr6");
-      await result.unsave();
+      Submission submission = await reddit.submission("10xznr6");
+      print("Saved status: ${submission.information["saved"]}");
+      await submission.unsave();
+      print("Saved status: ${submission.information["saved"]}");
     });
 
     test('can upvote a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
       Authorization? authorization = await reddit.authorize();
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
         "access_token": accessToken,
@@ -298,16 +303,16 @@ void main() {
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
-      dynamic result = await reddit.submission("10xznr6");
-      await result.upvote();
+      Submission submission = await reddit.submission("10xznr6");
+      print("Upvote status: ${submission.information["likes"]}");
+      await submission.upvote();
+      print("Upvote status: ${submission.information["likes"]}");
     });
 
     test('can downvote a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
       Authorization? authorization = await reddit.authorize();
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
         "access_token": accessToken,
@@ -318,10 +323,11 @@ void main() {
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
-      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
-      dynamic result = await reddit.submission("10xznr6");
-      await result.downvote();
+      Submission submission = await reddit.submission("10xznr6");
+      print("Upvote status: ${submission.information["likes"]}");
+      await submission.downvote();
+      print("Upvote status: ${submission.information["likes"]}");
     });
   });
 
@@ -360,7 +366,7 @@ void main() {
 
   group('front', () {
     test('can retrieve default front page information for logged in user', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
       Authorization? authorization = await reddit.authorize();
       print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
@@ -573,7 +579,7 @@ void main() {
     });
 
     test('can force user re-authorization', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
       Authorization? authorization = await reddit.authorize();
       print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
