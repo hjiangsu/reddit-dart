@@ -7,6 +7,15 @@ DotEnv env = DotEnv(includePlatformEnvironment: true)..load();
 
 void main() {
   group('me', () {
+    test('can obtain information about the current user', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+
+      await reddit.authorize();
+
+      Redditor redditor = await reddit.me();
+      print(redditor);
+    });
+
     test('throws error when retrieving subreddit subscriptions on a non-user authentication', () async {
       final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
 
@@ -38,6 +47,46 @@ void main() {
         print(subreddit.information!["display_name"]);
       }
     });
+
+    test('can retrieve user preferences', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+
+      // Re-authorize as a user
+      await reddit.authorize();
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": env['ACCESS_TOKEN']!,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": env['REFRESH_TOKEN']!,
+      };
+
+      await reddit.authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+
+      Redditor redditor = await reddit.me();
+      Map<String, dynamic> preferences = await redditor.preferences();
+      expect(preferences, isNotNull);
+    });
+
+    test('can retrieve user trophies', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+
+      // Re-authorize as a user
+      await reddit.authorize();
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": env['ACCESS_TOKEN']!,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": env['REFRESH_TOKEN']!,
+      };
+
+      await reddit.authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+
+      Redditor redditor = await reddit.me();
+      List<dynamic> trophies = await redditor.trophies();
+      expect(trophies, isNotNull);
+    });
   });
 
   group('redditor', () {
@@ -48,6 +97,15 @@ void main() {
 
       Redditor redditor = await reddit.redditor(username: "thermoelectricoreos");
       print(redditor.information!["id"]);
+    });
+
+    test('can retrieve user trophies', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+      await reddit.authorize();
+
+      Redditor redditor = await reddit.redditor(username: "reddit");
+      List<dynamic> trophies = await redditor.trophies();
+      expect(trophies, isNotNull);
     });
 
     test('can search for user based on a query with nsfw off', () async {
@@ -526,6 +584,58 @@ void main() {
       for (Subreddit subreddit in searchResults) {
         print(subreddit.information!["title"]);
       }
+    });
+
+    test('throws error when attempting to subscribe to a subreddit without user authorization', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+      await reddit.authorize();
+
+      Subreddit subreddit = await Subreddit.create(reddit: reddit, subreddit: "apple");
+      await subreddit.subscribe();
+    });
+
+    test('can subscribe to a subreddit', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+      Authorization? authorization = await reddit.authorize();
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": env['ACCESS_TOKEN']!,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": env['REFRESH_TOKEN']!,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+
+      Subreddit subreddit = await Subreddit.create(reddit: reddit, subreddit: "apple");
+      await subreddit.subscribe();
+    });
+
+    test('throws error when attempting to unsubscribe from a subreddit without user authorization', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+      await reddit.authorize();
+
+      Subreddit subreddit = await Subreddit.create(reddit: reddit, subreddit: "apple");
+      await subreddit.unsubscribe();
+    });
+
+    test('can unsubscribe from a subreddit', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
+      Authorization? authorization = await reddit.authorize();
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": env['ACCESS_TOKEN']!,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": env['REFRESH_TOKEN']!,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+
+      Subreddit subreddit = await Subreddit.create(reddit: reddit, subreddit: "apple");
+      await subreddit.unsubscribe();
     });
   });
 

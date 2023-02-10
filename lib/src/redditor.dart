@@ -43,6 +43,43 @@ class Redditor {
     }
   }
 
+  preferences() async {
+    // Can only be retrieved if there is an authenticated user
+    if (_reddit.authorization?.isUserAuthenticated == false) throw Exception("Cannot retrieve preferences for non-authenticated users");
+
+    Map<String, dynamic> preferencesResponse = await _reddit.request(
+      method: "GET",
+      endpoint: "/api/v1/me/prefs",
+    );
+    return preferencesResponse;
+  }
+
+  /// Retrieves the trophies associated with the current redditor instance
+  /// If the current redditor instance is the logged in user, it will retrieve the user's trophies
+  ///
+  /// If the redditor instance is NOT the logged in user, it will retrieve the redditor's trophies
+  ///
+  /// This essentially acts like the following endpoints: /api/v1/me/trophies, /api/v1/user/username/trophies
+  trophies() async {
+    Map<String, dynamic> trophiesResponse = {};
+
+    // Check to see if we have information for the given instance
+    if (_information == null) throw Exception("No information provided for the given instance");
+
+    // Grab username from information
+    String username = _information["name"];
+
+    // Retrieve the trophies of the given username
+    trophiesResponse = await _reddit.request(
+      method: "GET",
+      endpoint: "/api/v1/user/$username/trophies",
+    );
+
+    List<dynamic> trophiesList = parseTrophyList(trophiesResponse);
+
+    return trophiesList;
+  }
+
   subscriptions() async {
     String? after;
     List<dynamic> subredditsResponse = [];

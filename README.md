@@ -87,6 +87,12 @@ reddit.subreddit("apple").top("all");
 
 // To access more submissions, you can perform the following
 reddit.subreddit("apple").hot().more();
+
+// To subscribe to a subreddit
+reddit.subreddit("apple").subscribe();
+
+// To unsubscribe from a subreddit
+reddit.subreddit("apple").unsubscribe();
 ```
 
 ### Accessing a Submission's Information & Comments
@@ -118,6 +124,16 @@ reddit.submission("5or86n").unsave();
 ### Redditor Information
 If the app has user-authentication, and a user has given access/permissions to the application, you may retrieve information as if you were that user.
 
+This includes accessing information such as the user's subscriptions, preferences, and trophies
+
+#### User's Preferences
+You can access a user's preferences using the following functions. Note that you need to have OAuth authentication as the user to perform the following actions.
+
+```dart
+// Obtains the currently logged in user's subreddit subscriptions
+reddit.me().preferences();
+```
+
 #### Accessing Subreddit Subscriptions
 You can access a user's subreddit subscriptions using the following functions. Note that you need to have OAuth authentication as the user to perform the following actions.
 
@@ -131,16 +147,18 @@ The following section describes all the endpoints that are currently implemented
 
 The implemented endpoints are categorized by oauth scope as described in the Reddit API documentation: [reference](https://www.reddit.com/dev/api/oauth)
 
-### auth
+### auth: [Completed]
 - `/api/v1/access_token`
 
-### identity
+### identity: [Completed]
 - `/api/v1/me`
+- `/api/v1/me/prefs`
+- `/api/v1/me/trophies`
 
-### mysubreddits
+### mysubreddits: [Partial]
 - `/subreddits/mine/subscriber`
 
-### read
+### read: [Partial]
 - `/api/morechildren`
 - `/best`
 - `/by_id/names` - this is only for retrieving specific submissions
@@ -151,12 +169,16 @@ The implemented endpoints are categorized by oauth scope as described in the Red
 - `[/r/subreddit]/top`
 - `[/r/subreddit]/comments/article`
 - `/user/username/about`
+- `/api/v1/user/username/trophies`
 
-### save
+### save: [Partial]
 - `/api/save`
 - `/api/unsave`
 
-### vote
+### subscribe: [Partial]
+- `/api/subscribe`
+
+### vote: [Completed]
 - `/api/vote`
 
 

@@ -91,3 +91,19 @@ Map<String, dynamic> parseRedditor(Map<String, dynamic> redditorResponse) {
 
   return redditorResponse["data"];
 }
+
+// From a TrophyList, parse result to normalized format
+List<dynamic> parseTrophyList(Map<String, dynamic> data) {
+  if (!data.containsKey("data")) throw Exception("Response does not contain any data");
+  if (!data.containsKey("kind") && data["kind"] != "TrophyList") throw Exception("Response does not contain the correct type of data");
+
+  List<dynamic> trophyList = data["data"]["trophies"];
+
+  List<dynamic> formattedTrophyList = [];
+
+  for (Map<String, dynamic> trophyResponseMap in trophyList) {
+    formattedTrophyList.add(trophyResponseMap["data"]);
+  }
+
+  return formattedTrophyList;
+}

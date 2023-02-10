@@ -64,6 +64,46 @@ class Subreddit {
     }
   }
 
+  subscribe() async {
+    // Check to see if information is present first
+    if (_information == null) throw Exception("No information present for subreddit instance");
+
+    // Check to see if there is an authorized user
+    if (_reddit.authorization?.isUserAuthenticated == false) throw Exception("Cannot subscribe to subreddit without user authorization");
+
+    // Grab the subreddit name from the information
+    String subreddit = _information?["name"];
+
+    Map<String, dynamic> subredditResponse = await _reddit.request(
+      method: "POST",
+      endpoint: "/api/subscribe",
+      params: {
+        "action": "sub",
+        "sr": subreddit,
+      },
+    );
+  }
+
+  unsubscribe() async {
+    // Check to see if information is present first
+    if (_information == null) throw Exception("No information present for subreddit instance");
+
+    // Check to see if there is an authorized user
+    if (_reddit.authorization?.isUserAuthenticated == false) throw Exception("Cannot unsubscribe to subreddit without user authorization");
+
+    // Grab the subreddit name from the information
+    String subreddit = _information?["name"];
+
+    Map<String, dynamic> subredditResponse = await _reddit.request(
+      method: "POST",
+      endpoint: "/api/subscribe",
+      params: {
+        "action": "unsub",
+        "sr": subreddit,
+      },
+    );
+  }
+
   /// Obtain the listings categorized by "hot"
   hot() async {
     if (_information == null) return;
