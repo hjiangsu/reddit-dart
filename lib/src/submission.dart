@@ -73,6 +73,9 @@ class Submission {
       endpoint: "/api/save",
       params: {"id": "t3_$submissionId"},
     );
+
+    // Refetch submission to get updated information
+    await _initialize(id: submissionId, fetchComments: false);
   }
 
   unsave() async {
@@ -90,6 +93,9 @@ class Submission {
       endpoint: "/api/unsave",
       params: {"id": "t3_$submissionId"},
     );
+
+    // Refetch submission to get updated information
+    await _initialize(id: submissionId, fetchComments: false);
   }
 
   upvote() async {
@@ -113,6 +119,9 @@ class Submission {
       endpoint: "/api/vote",
       params: {"id": "t3_$submissionId", "dir": upvoted ? 0 : 1},
     );
+
+    // Refetch submission to get updated information
+    await _initialize(id: submissionId, fetchComments: false);
   }
 
   downvote() async {
@@ -136,6 +145,9 @@ class Submission {
       endpoint: "/api/vote",
       params: {"id": "t3_$submissionId", "dir": downvoted ? 0 : -1},
     );
+
+    // Refetch submission to get updated information
+    await _initialize(id: submissionId, fetchComments: false);
   }
 
   Map<String, dynamic> get information => _information ?? {};
