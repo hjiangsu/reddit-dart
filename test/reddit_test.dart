@@ -1,18 +1,14 @@
+import 'package:dotenv/dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:reddit/reddit.dart';
 
-// Fill these out before running any tests!
-const clientId = "";
-const userAgent = "";
-const callbackURL = "";
-const refreshToken = "";
-const accessToken = "";
+DotEnv env = DotEnv(includePlatformEnvironment: true)..load();
 
 void main() {
   group('me', () {
     test('throws error when retrieving subreddit subscriptions on a non-user authentication', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
 
       await reddit.authorize();
 
@@ -21,16 +17,16 @@ void main() {
     });
 
     test('can retrieve subreddit subscriptions from user', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
 
       // Re-authorize as a user
       await reddit.authorize();
       Map<String, dynamic> userRefreshAuthorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "expires_in": 86400,
         "scope": "*",
-        "refresh_token": refreshToken,
+        "refresh_token": env['REFRESH_TOKEN']!,
       };
 
       await reddit.authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
@@ -46,7 +42,7 @@ void main() {
 
   group('redditor', () {
     test('obtains information of a redditor from a given username', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
 
       await reddit.authorize();
 
@@ -55,7 +51,7 @@ void main() {
     });
 
     test('can search for user based on a query with nsfw off', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Search search = await reddit.search();
       List<dynamic> searchResults = await search.search(userQuery: "ther");
 
@@ -73,7 +69,7 @@ void main() {
     });
 
     test('can search for user based on a query with nsfw on', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Search search = await reddit.search();
       List<dynamic> searchResults = await search.search(userQuery: "ther", nsfw: true);
 
@@ -91,7 +87,7 @@ void main() {
     });
 
     test('can search for user based on a query with increased limits', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Search search = await reddit.search();
       List<dynamic> searchResults = await search.search(userQuery: "ther", limit: 100);
 
@@ -109,7 +105,7 @@ void main() {
     });
 
     test('can search for user submissions', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Redditor redditor = await reddit.redditor(username: "_Mace_Windu_");
 
       List<Submission> submissions = await redditor.submissions();
@@ -120,7 +116,7 @@ void main() {
     });
 
     test('can search for user submissions with more', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Redditor redditor = await reddit.redditor(username: "KeyTension8633");
 
       List<Submission> submissions = await redditor.submissions();
@@ -141,7 +137,7 @@ void main() {
 
   group('submission', () {
     test('can retrieve submission information from a subreddit - hot', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.hot();
 
@@ -151,7 +147,7 @@ void main() {
     });
 
     test('can retrieve submission information from a subreddit - new', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.newest();
 
@@ -161,7 +157,7 @@ void main() {
     });
 
     test('can retrieve submission information from a subreddit - top (now)', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.top("hour");
 
@@ -171,7 +167,7 @@ void main() {
     });
 
     test('can retrieve submission information from a subreddit - top (today)', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.top("day");
 
@@ -181,7 +177,7 @@ void main() {
     });
 
     test('can retrieve submission information from a subreddit - top (week)', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.top("week");
 
@@ -191,7 +187,7 @@ void main() {
     });
 
     test('can retrieve submission information from a subreddit - top (month)', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.top("month");
 
@@ -201,7 +197,7 @@ void main() {
     });
 
     test('can retrieve submission information from a subreddit - top (year)', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.top("year");
 
@@ -211,7 +207,7 @@ void main() {
     });
 
     test('can retrieve submission information from a subreddit - top (all)', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.top("all");
 
@@ -221,7 +217,7 @@ void main() {
     });
 
     test('can retrieve more submissions from a subreddit - hot', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       List<Submission> submissions = await subreddit.hot();
 
@@ -239,21 +235,21 @@ void main() {
     });
 
     test('can retrieve submission information from a submission', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       dynamic result = await reddit.submission("5or86n");
       print(result.information["title"]);
     });
 
     test('can save a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
       Authorization? authorization = await reddit.authorize();
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "expires_in": 86400,
         "scope": "*",
-        "refresh_token": refreshToken,
+        "refresh_token": env['REFRESH_TOKEN']!,
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
@@ -265,15 +261,15 @@ void main() {
     });
 
     test('can unsave a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
       Authorization? authorization = await reddit.authorize();
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "expires_in": 86400,
         "scope": "*",
-        "refresh_token": refreshToken,
+        "refresh_token": env['REFRESH_TOKEN']!,
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
@@ -285,15 +281,15 @@ void main() {
     });
 
     test('can upvote a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
       Authorization? authorization = await reddit.authorize();
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "expires_in": 86400,
         "scope": "*",
-        "refresh_token": refreshToken,
+        "refresh_token": env['REFRESH_TOKEN']!,
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
@@ -305,15 +301,15 @@ void main() {
     });
 
     test('can downvote a submission when logged in', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
       Authorization? authorization = await reddit.authorize();
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "expires_in": 86400,
         "scope": "*",
-        "refresh_token": refreshToken,
+        "refresh_token": env['REFRESH_TOKEN']!,
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
@@ -327,7 +323,7 @@ void main() {
 
   group('comment', () {
     test('can retrieve submission comments from a submission', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       CommentTree commentTree = await reddit.commentTree(submissionId: "5or86n", subreddit: 'announcements');
       List<Comment> comments = commentTree.comments ?? [];
 
@@ -337,7 +333,7 @@ void main() {
     });
 
     test('can retrieve more top-level comments from a submission', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       CommentTree commentTree = await reddit.commentTree(submissionId: "5or86n", subreddit: 'announcements');
       List<Comment> comments = commentTree.comments ?? [];
       comments = await commentTree.more();
@@ -348,7 +344,7 @@ void main() {
     });
 
     test('can retrieve replies from an arbitrary comment', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       CommentTree commentTree = await reddit.commentTree(submissionId: "5or86n", commentId: "dcleoq1");
       List<Comment> comments = commentTree.comments ?? [];
 
@@ -360,16 +356,16 @@ void main() {
 
   group('front', () {
     test('can retrieve default front page information for logged in user', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
       Authorization? authorization = await reddit.authorize();
       print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "expires_in": 86400,
         "scope": "*",
-        "refresh_token": refreshToken,
+        "refresh_token": env['REFRESH_TOKEN']!,
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
@@ -391,7 +387,7 @@ void main() {
     });
 
     test('can retrieve front page information from a type - home', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Front front = await reddit.front("home");
       List<Submission> submissions = await front.best();
 
@@ -433,7 +429,7 @@ void main() {
     });
 
     test('can retrieve front page information from a type - all', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Front front = await reddit.front("all");
       List<Submission> submissions = await front.hot();
 
@@ -443,7 +439,7 @@ void main() {
     });
 
     test('can retrieve front page information from a type - popular', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Front front = await reddit.front("popular");
       List<Submission> submissions = await front.hot();
 
@@ -453,7 +449,7 @@ void main() {
     });
 
     test('can retrieve more front page information from a type - popular', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Front front = await reddit.front("popular");
       List<Submission> submissions = await front.hot();
 
@@ -473,13 +469,13 @@ void main() {
 
   group('subreddit', () {
     test('can retrieve subreddit information from a subreddit', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Subreddit subreddit = await reddit.subreddit("apple");
       print(subreddit.information!["display_name"]);
     });
 
     test('can search for subreddit based on a query with nsfw off', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Search search = await reddit.search();
       List<Subreddit> searchResults = await search.search(subredditQuery: "ask");
 
@@ -497,7 +493,7 @@ void main() {
     });
 
     test('can search for subreddit based on a query with nsfw on', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Search search = await reddit.search();
       List<Subreddit> searchResults = await search.search(subredditQuery: "ask", nsfw: true);
 
@@ -515,7 +511,7 @@ void main() {
     });
 
     test('can search for subreddit based on a query with increased limits', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Search search = await reddit.search();
       List<Subreddit> searchResults = await search.search(subredditQuery: "ask", limit: 100);
 
@@ -541,13 +537,13 @@ void main() {
     });
 
     test('can authorize with given clientId, clientSecret, and userAgent', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Authorization? authorization = await reddit.authorize();
       print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
     });
 
     test('can re-authorize with given clientId, clientSecret, and userAgent', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Authorization? authorization = await reddit.authorize();
       print('initial: is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
@@ -556,12 +552,12 @@ void main() {
     });
 
     test('can force manual authorization map', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent);
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       Authorization? authorization = await reddit.authorize();
       print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
       Map<String, dynamic> authorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "device_id": "88fd40ce-b4c7-47f3-9662-1703721dd760",
         "expires_in": 86400,
@@ -573,16 +569,16 @@ void main() {
     });
 
     test('can force user re-authorization', () async {
-      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: RedditOptions(callbackURL: callbackURL));
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!, options: RedditOptions(callbackURL: env['CALLBACK_URL']!));
       Authorization? authorization = await reddit.authorize();
       print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
 
       Map<String, dynamic> userRefreshAuthorizationMap = {
-        "access_token": accessToken,
+        "access_token": env['ACCESS_TOKEN']!,
         "token_type": "bearer",
         "expires_in": 86400,
         "scope": "*",
-        "refresh_token": refreshToken,
+        "refresh_token": env['REFRESH_TOKEN']!,
       };
 
       await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);

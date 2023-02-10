@@ -9,6 +9,7 @@ environment:
 
 dependencies:
   dio: ^4.0.6
+  dotenv: ^4.1.0
   flutter:
     sdk: flutter
 

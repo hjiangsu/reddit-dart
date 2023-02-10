@@ -1,0 +1,5 @@
+CLIENT_ID = clientId
+USER_AGENT = example (by /u/example)
+CALLBACK_URL = callbackURL
+REFRESH_TOKEN = refreshToken
+ACCESS_TOKEN = accessToken
