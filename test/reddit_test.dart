@@ -3,17 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:reddit/reddit.dart';
 
 // Fill these out before running any tests!
-// const clientId = "";
-// const userAgent = "";
-// const callbackURL = "";
-// const refreshToken = "";
-// const accessToken = "";
-
-const clientId = "***REMOVED***";
-const userAgent = "***REMOVED***";
-const callbackURL = "***REMOVED***";
-const refreshToken = "***REMOVED***";
-const accessToken = "***REMOVED***";
+const clientId = "";
+const userAgent = "";
+const callbackURL = "";
+const refreshToken = "";
+const accessToken = "";
 
 void main() {
   group('me', () {
