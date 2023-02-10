@@ -160,3 +160,14 @@ The implemented endpoints are categorized by oauth scope as described in the Red
 - `/api/vote`
 
 
+## Running Tests
+To run tests defined in the `/test` directory, environment variables must first be passed in from a `.env` file otherwise tests may fail.
+
+An example of a `.env` file is shown below (and also in `.example_env file`)
+```
+CLIENT_ID = clientId
+USER_AGENT = example (by /u/example)
+CALLBACK_URL = callbackURL
+REFRESH_TOKEN = refreshToken
+ACCESS_TOKEN = accessToken
+```
