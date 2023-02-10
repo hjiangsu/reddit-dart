@@ -58,5 +58,85 @@ class Submission {
     }
   }
 
+  save() async {
+    if (_information == null) return;
+
+    // Get the fullname
+    String submissionId = _information!["id"];
+
+    // Check to see if the submission is saved - ignore if already saved
+    bool saved = _information?["saved"] ?? false;
+    if (saved) return;
+
+    await _reddit.request(
+      method: "POST",
+      endpoint: "/api/save",
+      params: {"id": "t3_$submissionId"},
+    );
+  }
+
+  unsave() async {
+    if (_information == null) return;
+
+    // Get the fullname
+    String submissionId = _information!["id"];
+
+    // Check to see if the submission is saved - ignore if already saved
+    bool unsaved = _information?["saved"] == false;
+    if (unsaved) return;
+
+    await _reddit.request(
+      method: "POST",
+      endpoint: "/api/unsave",
+      params: {"id": "t3_$submissionId"},
+    );
+  }
+
+  upvote() async {
+    if (_information == null) return;
+
+    // Check to see if user is authenticated
+    if (_reddit.authorization?.isUserAuthenticated == false) return;
+
+    // Check to see if the submission is archived - archived submissions cannot be voted on
+    bool archived = _information?["archived"] ?? false;
+    if (archived) return;
+
+    // Get the fullname
+    String submissionId = _information!["id"];
+
+    // Get the vote status to see if it was already upvoted
+    bool upvoted = _information?["likes"] ?? false;
+
+    await _reddit.request(
+      method: "POST",
+      endpoint: "/api/vote",
+      params: {"id": "t3_$submissionId", "dir": upvoted ? 0 : 1},
+    );
+  }
+
+  downvote() async {
+    if (_information == null) return;
+
+    // Check to see if user is authenticated
+    if (_reddit.authorization?.isUserAuthenticated == false) return;
+
+    // Check to see if the submission is archived - archived submissions cannot be voted on
+    bool archived = _information?["archived"] ?? false;
+    if (archived) return;
+
+    // Get the fullname
+    String submissionId = _information!["id"];
+
+    // Get the vote status to see if it was already upvoted
+    bool downvoted = _information?["likes"] == false;
+
+    await _reddit.request(
+      method: "POST",
+      endpoint: "/api/vote",
+      params: {"id": "t3_$submissionId", "dir": downvoted ? 0 : -1},
+    );
+  }
+
   Map<String, dynamic> get information => _information ?? {};
 }

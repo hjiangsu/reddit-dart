@@ -243,6 +243,86 @@ void main() {
       dynamic result = await reddit.submission("5or86n");
       print(result.information["title"]);
     });
+
+    test('can save a submission when logged in', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": accessToken,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": refreshToken,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      dynamic result = await reddit.submission("10xznr6");
+      await result.save();
+    });
+
+    test('can unsave a submission when logged in', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": accessToken,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": refreshToken,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      dynamic result = await reddit.submission("10xznr6");
+      await result.unsave();
+    });
+
+    test('can upvote a submission when logged in', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": accessToken,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": refreshToken,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      dynamic result = await reddit.submission("10xznr6");
+      await result.upvote();
+    });
+
+    test('can downvote a submission when logged in', () async {
+      final Reddit reddit = Reddit(clientId: clientId, clientSecret: "", userAgent: userAgent, options: {"callbackURL": callbackURL});
+      Authorization? authorization = await reddit.authorize();
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      Map<String, dynamic> userRefreshAuthorizationMap = {
+        "access_token": accessToken,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "scope": "*",
+        "refresh_token": refreshToken,
+      };
+
+      await authorization?.reauthorize(refreshCredentials: userRefreshAuthorizationMap);
+      print('is authorized: ${authorization?.isInitialized} | authorization: ${authorization?.authorizationInformation}');
+
+      dynamic result = await reddit.submission("10xznr6");
+      await result.downvote();
+    });
   });
 
   group('comment', () {
