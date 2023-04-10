@@ -82,58 +82,125 @@ class CommentTree {
       commentTree[commentsMap["comments"][i].information["parent_id"]]?.replies.add(commentTree["t1_${commentsMap["comments"][i].information["id"]}"]);
     }
 
-    // try {
-    //   String? moreCommentsParentId = commentsMap['more']["data"]["parent_id"]?.substring(3);
-    //   _moreComments = commentsMap['more']["data"]["children"] ?? [];
-
-    //   if (moreCommentsParentId != null) {
-    //     // fetch the continue thread links
-    //     List<dynamic> commentsResponse = await _reddit.request(
-    //       method: "GET",
-    //       endpoint: "/r/$subreddit/comments/$submissionId//$moreCommentsParentId",
-    //       params: {"article": submissionId, "depth": 10, "limit": 100, "showmore": true, "sort": "top"},
-    //     );
-    //     Map<String, dynamic> moreCommentListing = await parseListing(commentsResponse[1]);
-    //     Map<String, dynamic> moreCommentsMap = parseCommentListing(commentListing: moreCommentListing);
-    //     print(moreCommentsMap);
-    //   }
-    // } catch (err) {}
     comments = [commentTree["t1_$commentId"]];
     return comments;
   }
 
-  // Get more top level comments. This only works if the CommentTree was initialized from a Submission.
-  // @todo: Make this work for any type of commentTree
-  more() async {
-    if (moreComments == null || moreComments!.isEmpty) return;
+  List<int> findCommentById(List<Comment> comments, String id) {
+    for (int i = 0; i < comments.length; i++) {
+      Comment comment = comments[i];
+      if (comment.information["id"] == id) {
+        // The comment was found at this level of the tree
+        return [i];
+      } else {
+        // Look for the comment in the replies
+        List<int> indexes = findCommentById(comment.replies, id);
+        if (indexes.isNotEmpty) {
+          // The comment was found in the replies
+          indexes.insert(0, i);
+          return indexes;
+        }
+      }
+    }
+    // The comment was not found
+    return [];
+  }
 
-    // Get a subset of the children to fetch, fetch 50 more top level comments at a time
-    List<dynamic> childrenToFetch = moreComments!.take(50).toList();
+  // This function will handle fetching more comments from either the top submission, or any replies
+  more({String? commentId, String? sort}) async {
+    if (commentId != null) {
+      // If a commentId is passed in, then we are attempting to fetch more replies from that comment
+      // Run a fetch query using the commentId, and then replace the existing comment with the new one
+      Map<String, dynamic> commentsRawResponse = await _reddit.request(
+        method: "POST",
+        endpoint: "/api/morechildren",
+        params: {
+          "link_id": "t3_$_submissionId",
+          "children": commentId,
+          "api_type": "json",
+          "limit_children": false,
+          "sort": sort ?? "top",
+        },
+      );
 
-    for (String commentId in childrenToFetch) {
-      moreComments!.removeWhere((element) => element == commentId);
+      List<dynamic> commentResponse = commentsRawResponse["json"]["data"]["things"];
+
+      // Convert this to a format that we can parse
+      Map<String, dynamic> commentListing = {
+        "children": commentResponse,
+      };
+
+      Map<String, dynamic> commentsMap = parseCommentListing(commentListing: commentListing);
+
+      // Generate the tree structure now
+      Comment parentComment = commentsMap["comments"].firstWhere((Comment comment) => comment.information["id"] == commentId);
+
+      Map<String, dynamic> commentTree = {"t1_$commentId": parentComment};
+
+      for (int i = 0; i < commentsMap["comments"].length; i++) {
+        commentTree["t1_${commentsMap["comments"][i].information["id"]}"] = commentsMap["comments"][i];
+        commentTree[commentsMap["comments"][i].information["parent_id"]]?.replies.add(commentTree["t1_${commentsMap["comments"][i].information["id"]}"]);
+      }
+
+      Comment fetchedComment = commentTree["t1_$commentId"];
+
+      // Find the indexes which allow us to traverse to the correct comment to be replaced
+      List<int> indexes = findCommentById(comments ?? [], commentId);
+
+      if (indexes.isNotEmpty) {
+        // Traverse the indexes and update the comment
+        Comment? parentComment;
+        Comment commentToUpdate = comments![indexes[0]];
+
+        for (int i = 1; i < indexes.length; i++) {
+          parentComment = commentToUpdate;
+          commentToUpdate = commentToUpdate.replies[indexes[i]];
+        }
+
+        // Replace the old comment with the new one
+        int lastIndex = indexes.last;
+
+        if (indexes.length == 1) {
+          comments![lastIndex] = fetchedComment;
+        } else {
+          parentComment!.replies[lastIndex] = fetchedComment;
+        }
+      } else {
+        throw Exception("Unable to replace comment as it was not found in the tree");
+      }
+    } else {
+      // Otherwise, let's fetch more comments from the submission
+      if (moreComments == null || moreComments!.isEmpty) return;
+
+      // Get a subset of the children to fetch, fetch 50 more top level comments at a time
+      List<dynamic> childrenToFetch = moreComments!.take(50).toList();
+
+      for (String commentId in childrenToFetch) {
+        moreComments!.removeWhere((element) => element == commentId);
+      }
+
+      Map<String, dynamic> commentsRawResponse = await _reddit.request(
+        method: "GET",
+        endpoint: "/api/morechildren",
+        params: {
+          "link_id": "t3_$_submissionId",
+          "children": childrenToFetch.join(","),
+          "api_type": "json",
+        },
+      );
+
+      List<dynamic> commentResponse = commentsRawResponse["json"]["data"]["things"];
+
+      // Convert this to a format that we can parse
+      Map<String, dynamic> commentListing = {
+        "children": commentResponse,
+      };
+
+      Map<String, dynamic> commentsMap = parseCommentListing(commentListing: commentListing);
+
+      comments!.addAll(commentsMap["comments"]);
     }
 
-    Map<String, dynamic> commentsRawResponse = await _reddit.request(
-      method: "GET",
-      endpoint: "/api/morechildren",
-      params: {
-        "link_id": "t3_$_submissionId",
-        "children": childrenToFetch.join(","),
-        "api_type": "json",
-      },
-    );
-
-    List<dynamic> commentResponse = commentsRawResponse["json"]["data"]["things"];
-
-    // Convert this to a format that we can parse
-    Map<String, dynamic> commentListing = {
-      "children": commentResponse,
-    };
-
-    Map<String, dynamic> commentsMap = parseCommentListing(commentListing: commentListing);
-
-    comments!.addAll(commentsMap["comments"]);
     return comments;
   }
 }

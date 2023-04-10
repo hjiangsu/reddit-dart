@@ -390,6 +390,18 @@ void main() {
       }
     });
 
+    test('can retrieve more comments from a comment', () async {
+      final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
+      CommentTree commentTree = await reddit.commentTree(submissionId: "5or86n", subreddit: 'announcements');
+      List<Comment> comments = commentTree.comments ?? [];
+
+      await commentTree.more(commentId: "dclg12s"); // [1][0][1]
+
+      for (Comment comment in comments) {
+        print(comment.information["body"]);
+      }
+    });
+
     test('can retrieve more top-level comments from a submission', () async {
       final Reddit reddit = Reddit(clientId: env['CLIENT_ID']!, clientSecret: "", userAgent: env['USER_AGENT']!);
       CommentTree commentTree = await reddit.commentTree(submissionId: "5or86n", subreddit: 'announcements');
