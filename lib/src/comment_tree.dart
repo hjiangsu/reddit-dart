@@ -185,7 +185,9 @@ class CommentTree {
         params: {
           "link_id": "t3_$_submissionId",
           "children": childrenToFetch.join(","),
+          "limit_children": false,
           "api_type": "json",
+          "sort": sort ?? "top",
         },
       );
 
