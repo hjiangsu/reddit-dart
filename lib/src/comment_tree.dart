@@ -199,8 +199,23 @@ class CommentTree {
       };
 
       Map<String, dynamic> commentsMap = parseCommentListing(commentListing: commentListing);
+      Map<String, dynamic> commentTree = {};
 
-      comments!.addAll(commentsMap["comments"]);
+      for (int i = 0; i < commentsMap["comments"].length; i++) {
+        commentTree["t1_${commentsMap["comments"][i].information["id"]}"] = commentsMap["comments"][i];
+        commentTree[commentsMap["comments"][i].information["parent_id"]]?.replies.add(commentTree["t1_${commentsMap["comments"][i].information["id"]}"]);
+      }
+
+      // Filter out the comments where the parent id is the top level comment
+      List<Comment> _comments = [];
+
+      commentTree.forEach((key, comment) {
+        if (comment.information["parent_id"].substring(0, 2) == 't3') {
+          _comments.add(comment);
+        }
+      });
+
+      comments!.addAll(_comments);
     }
 
     return comments;
