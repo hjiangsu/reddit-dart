@@ -76,8 +76,8 @@ class Reddit {
     }
   }
 
-  Future<Authorization?> authorize() async {
-    authorization = await Authorization.create(reddit: this, callbackURL: options?.callbackURL);
+  Future<Authorization?> authorize({String? userUuid}) async {
+    authorization = await Authorization.create(reddit: this, callbackURL: options?.callbackURL, userUuid: userUuid);
     return authorization;
   }
 
