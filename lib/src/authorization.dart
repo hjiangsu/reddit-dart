@@ -4,17 +4,19 @@ part of './reddit.dart';
 class Authorization {
   late Reddit _reddit;
   late String? _callbackURL;
+  late String? _userUuid;
 
   Map<String, dynamic> authorizationInformation = {};
 
-  Authorization._create({required Reddit reddit, String? callbackURL}) {
+  Authorization._create({required Reddit reddit, String? callbackURL, String? userUuid}) {
     _reddit = reddit;
     _callbackURL = callbackURL;
+    _userUuid = userUuid;
   }
 
   /// Factory function to generate the Authorization instance
-  static Future<Authorization> create({required Reddit reddit, String? callbackURL}) async {
-    Authorization authorizationInstance = Authorization._create(reddit: reddit, callbackURL: callbackURL);
+  static Future<Authorization> create({required Reddit reddit, String? callbackURL, String? userUuid}) async {
+    Authorization authorizationInstance = Authorization._create(reddit: reddit, callbackURL: callbackURL, userUuid: userUuid);
 
     // Do initialization that requires async
     await authorizationInstance._initialize(clientId: reddit.clientId, clientSecret: reddit.clientSecret);
@@ -27,10 +29,6 @@ class Authorization {
   _initialize({required String clientId, required String clientSecret}) async {
     const String url = "$_redditURL/api/v1/access_token";
 
-    // This device id should be per user per device
-    // @todo - change the device id to be retrieved from the device itself
-    const String deviceId = "88fd40ce-b4c7-47f3-9662-1703721dd760";
-
     Map<String, String> headers = {
       "host": "www.reddit.com",
       "authorization": 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
@@ -41,7 +39,7 @@ class Authorization {
         url,
         data: {
           "grant_type": "$_oauthRedditURL/grants/installed_client",
-          "device_id": deviceId,
+          "device_id": _userUuid,
         },
         options: Options(
           contentType: Headers.formUrlEncodedContentType,
@@ -66,6 +64,7 @@ class Authorization {
       _callbackURL!,
       data: {
         "refresh_token": refreshToken,
+        "device_id": _userUuid,
       },
     );
 
