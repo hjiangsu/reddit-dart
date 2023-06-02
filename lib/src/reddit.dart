@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 
 import 'package:reddit/src/comment.dart';
 import 'package:reddit/src/utils/parse.dart';
+import 'package:reddit/src/utils/ratelimit.dart';
 
 part 'authorization.dart';
 part 'subreddit.dart';
@@ -35,7 +36,7 @@ class Reddit {
   RedditOptions? options;
   Authorization? authorization;
 
-  int remainingRequests = 600;
+  RateLimit rateLimit = RateLimit();
 
   Reddit({required this.clientId, required this.clientSecret, required this.userAgent, this.options});
 
@@ -78,10 +79,14 @@ class Reddit {
         String? ratelimitRemaining = response?.headers.value('X-Ratelimit-Remaining');
         String? ratelimitReset = response?.headers.value('X-Ratelimit-Reset');
 
-        print('Reddit rate limit used: $ratelimitUsed');
-        if (ratelimitRemaining != null && double.parse(ratelimitRemaining) >= 0) remainingRequests = double.parse(ratelimitRemaining).toInt();
-        if (remainingRequests == 0) {
-          throw Exception("Rate limit exceeded");
+        rateLimit.setRemaining(double.parse(ratelimitRemaining!));
+        rateLimit.setUsed(double.parse(ratelimitUsed!));
+        rateLimit.setResetSeconds(double.parse(ratelimitReset!));
+
+        if (rateLimit.hasExceeded()) {
+          throw Exception("Rate limit exceeded and will be reset in ${rateLimit.resetSeconds} seconds");
+        } else {
+          print("Rate limit: $rateLimit");
         }
       }
 
