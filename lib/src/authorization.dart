@@ -68,7 +68,7 @@ class Authorization {
       },
     );
 
-    authorizationInformation = response.data;
+    authorizationInformation = jsonDecode(response.data);
   }
 
   /// Performs re-authorization for the client and/or user. If refreshCredentials is provided, it will attempt to refresh the access token for the given user.
